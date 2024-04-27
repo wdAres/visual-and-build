@@ -69,6 +69,7 @@ const ProfileInformation = () => {
     name: "",
     email: "",
     password: "",
+    current_password:"",
     phone: "",
     businessName: "",
     businessPhone: "",
@@ -116,6 +117,7 @@ const ProfileInformation = () => {
       setProfileInformation({
         name: data?.data?.name,
         email: data?.data?.email,
+        current_password:"",
         password: "",
         phone: data?.data?.phone,
         businessName: data?.data?.businessName,
@@ -274,10 +276,11 @@ const ProfileInformation = () => {
 
           <div className="page__subtitle">Update Password</div>
           <div className="input__wrapper">
-            {/* <div className="input_group">
+            <div className="input_group">
             <label className="required">Current Password</label>
-            <input type="password" />
-          </div> */}
+            <input  name="current_password" type="password" value={profileInformation?.current_password}
+                onChange={handleChange} />
+          </div>
             <div className="input_group">
               <label className="required">New Password</label>
               <input

@@ -45,6 +45,7 @@ const Search = ({
   const [categoriesIdList, setCategoriesIdList] = useState();
   const searchParams = new URLSearchParams(search);
 
+
   useEffect(() => {
     (async function () {
       const categoryData = await fetchCategories({
@@ -53,6 +54,7 @@ const Search = ({
       const brandData = await fetchBrands({
         path: `/brand?limit=100&page=1`,
       });
+
       setCategoriesData(categoryData?.data);
       setBrandsData(brandData?.data?.docs);
     })();

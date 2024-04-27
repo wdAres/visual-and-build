@@ -102,25 +102,33 @@ const sortingOptions = [
     sortOrder: "desc",
   },
   {
-    label: "Name (A - Z)",
-    value: "name",
-    sortOrder: "asc",
+    label: "Top Rated",
+    value: "topRated",
   },
   {
-    label: "Name (Z - A)",
-    value: "name",
-    sortOrder: "desc",
+    label: "Best Seller",
+    value: "bestSeller"
   },
-  {
-    label: "Date (Ascending)",
-    value: "date",
-    sortOrder: "asc",
-  },
-  {
-    label: "Date (Descending)",
-    value: "date",
-    sortOrder: "desc",
-  },
+  // {
+  //   label: "Name (A - Z)",
+  //   value: "name",
+  //   sortOrder: "asc",
+  // },
+  // {
+  //   label: "Name (Z - A)",
+  //   value: "name",
+  //   sortOrder: "desc",
+  // },
+  // {
+  //   label: "Date (Ascending)",
+  //   value: "date",
+  //   sortOrder: "asc",
+  // },
+  // {
+  //   label: "Date (Descending)",
+  //   value: "date",
+  //   sortOrder: "desc",
+  // },
 ];
 
 const FilterableProducts = ({
@@ -146,12 +154,18 @@ const FilterableProducts = ({
   const [locationRange, setLocationRange] = useState();
   const [latLong, setLatLong] = useState();
 
+  const [instabuildParams,setInstabuild] = useState('')
+
   useEffect(() => {
     const params = new URLSearchParams(search);
+
+const instaBuild = params.getAll("instabuild")
+
     const categoryNames = params.getAll("categories[]");
     const brandNames = params.getAll("brands[]");
     setCategoriesIdList(categoryNames);
     setBrandsIdList(brandNames);
+    setInstabuild(instaBuild)
     setCategoriesList && setCategoriesList(categoryNames);
   }, [search, categoriesData, brandsData]);
 
@@ -163,7 +177,8 @@ const FilterableProducts = ({
     sortOrder,
     priceRange,
     locationRange,
-    latLong
+    latLong,
+    instabuildParams
   ) => {
     let url = `${apiPath}?limit=16&page=${pageNumber}`;
     categories.forEach((category) => {
@@ -172,6 +187,9 @@ const FilterableProducts = ({
     brands?.forEach((brand) => {
       url += `&brands[]=${brand}`;
     });
+    if (instabuildParams) {
+      url += `&instabuild=true`
+    }
     if (sortBy && sortOrder && sortBy !== "newestFirst") {
       url += `&sortBy=${sortBy}&sortOrder=${sortOrder}`;
     }
@@ -200,7 +218,8 @@ const FilterableProducts = ({
         sortOrder,
         priceRange,
         locationRange,
-        latLong
+        latLong,
+        instabuildParams
       );
       fetchProducts({ path });
     }
@@ -214,6 +233,7 @@ const FilterableProducts = ({
     priceRange,
     locationRange,
     latLong,
+    instabuildParams
   ]);
 
   const handleProductClick = (item) => {

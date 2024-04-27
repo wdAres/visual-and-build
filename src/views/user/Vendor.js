@@ -40,6 +40,36 @@ const VendorStyle = styled.div`
   .products__list {
     padding: 60px 0;
   }
+
+  .grid_heading{
+    color: #303030;
+    font-size: 27px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 34.5px;
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+    padding:50px 0;
+  }
+  .grid_card{
+    padding: 20px;
+    border-radius: 5px;
+    border: 1px solid #ae0000;
+    grid-column: span 1 ;
+  }
+  .grid_card h5{
+    margin-bottom: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #ae0000;
+
+  }
+  .grid_card p{
+  }
   @media (max-width: 768px) {
     .vendor__cover {
       margin-top: 0;
@@ -73,7 +103,8 @@ const Vendor = () => {
   const [fetchSellerDetails, { isLoading: isFetchingSellerDetails }] =
     useRequest();
   const [sellerData, setSellerData] = useState();
-  const { shopLogo, vendorName, topBanner, sliderBanners } = sellerData || {};
+  const { shopLogo, vendorName, topBanner, sliderBannersUrl , shopAddress , shopPhone , pickupAddress , pickupPoint } =
+    sellerData || {};
   const [
     fetchCategories,
     { isLoading: isFetchingCategories, state: category },
@@ -89,6 +120,7 @@ const Vendor = () => {
         paths?.map((path) => fetchSellerDetails({ path }))
       );
       setSellerData(results[0]?.data);
+      console.log(results);
     };
     fetchSellerInfo(sellerId);
   }, [sellerId]);
@@ -126,11 +158,36 @@ const Vendor = () => {
             type={"text-in-image"}
           />
         </div>
+        <div>
+          <div className="title_wrapper">
+            <h2 className="title grid_heading">Seller Details</h2>
+          </div>
+          <div className="grid">
+              <div className='grid_card'>
+                <h5>Shop Address</h5>
+                <p>
+                  {shopAddress}
+                </p>
+              </div>
+              <div className='grid_card'>
+                <h5>Shop Phone</h5>
+                <p>
+                  {shopPhone}
+                </p>
+              </div>
+              <div className='grid_card'>
+                <h5>Pickup Address</h5>
+                <p>
+                  {pickupAddress?.address}
+                </p>
+              </div>
+          </div>
+        </div>
       </div>
       <div>
-        {sliderBanners?.length > 0 && (
+        {sliderBannersUrl?.length > 0 && (
           <SlidingBanner
-            bannerData={sliderBanners}
+            bannerData={sliderBannersUrl}
             leftdistance={isDesktop ? 108 : 30}
             loading={isFetchingSellerDetails}
           />

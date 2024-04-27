@@ -52,7 +52,7 @@ const HeaderStyle = styled.header`
   }
   .other__links {
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     gap: 40px;
     > div {
       cursor: pointer;

@@ -10,6 +10,17 @@ const FilterStyle = styled.div`
   .filter__wrapper {
     padding: 27px;
   }
+  .title_flex {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .title_enable {
+    color: #ae0000;
+    font-size: 12px;
+    cursor: pointer;
+    font-weight: 500;
+  }
   .search__input {
     background-color: #fff;
     width: 100%;
@@ -162,7 +173,7 @@ const Filters = ({
   const [fetchSearch] = useRequest();
   const [priceValue, setPriceValue] = useState(priceRange);
   const [locationValue, setLocationValue] = useState(locationRange);
-  const [userLocation, setUserLocation] = useState({});
+  const [userLocation, setUserLocation] = useState(null);
 
   useDebounce(
     () => {
@@ -249,8 +260,30 @@ const Filters = ({
       parentElement.classList.toggle("active");
     }
   };
+  const enableLocation = () => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
+          setUserLocation({ latitude, longitude });
+        },
+        (error) => {
+          if (error.code === error.PERMISSION_DENIED) {
+            alert(
+              "Location access is denied. Please enable location access in your browser settings."
+            );
+          } else {
+            alert("Error getting location:", error);
+          }
+        }
+      );
+    } else {
+      alert("Geolocation is not supported in this browser.");
+    }
+  };
 
-  useEffect(() => {
+  const handleLoc = () => {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -266,7 +299,12 @@ const Filters = ({
         }
       );
     }
+  };
+
+  useEffect(() => {
+    handleLoc();
   }, []);
+
 
   return (
     <FilterStyle>
@@ -321,7 +359,8 @@ const Filters = ({
             )}
         </div>
 
-        {categoriesData?.map((item) => (
+
+        {/* {categoriesData?.map((item) => (
           <FilterDropdownStyle className="filter__wrap">
             <div className="filter__group" key={item?._id}>
               <input
@@ -363,7 +402,78 @@ const Filters = ({
                 ))}
             </div>
           </FilterDropdownStyle>
+        ))} */}
+        
+
+        {categoriesData?.map((item) => (
+  <FilterDropdownStyle className="filter__wrap" key={item?._id}>
+    <div className="filter__group" key={item?._id}>
+      <input
+        type="checkbox"
+        name="categories"
+        className="checkbox"
+        id={`category${item?._id}`}
+        value={item?._id}
+        checked={categoryNames?.includes(item?._id)}
+        onChange={handleChange}
+      />
+      {!item?.children?.length ? (
+        <label className="label" htmlFor={`category${item?._id}`}>
+          {item?.name}
+        </label>
+      ) : (
+        <div className="label" onClick={toggleVisibility}>
+          {item?.name} <GoChevronDown className="icon" />
+        </div>
+      )}
+    </div>
+    {/* Render children */}
+    {item?.children?.length > 0 && (
+      <div className="dropdown">
+        {item?.children?.map((child) => (
+          <div className="filter__group" key={child?._id}>
+            <input
+              type="checkbox"
+              name="categories"
+              className="checkbox"
+              id={`category${child?._id}`}
+              value={child?._id}
+              checked={categoryNames?.includes(child?._id)}
+              onChange={handleChange}
+            />
+            <label className="label" htmlFor={`category${child?._id}`}>
+              {child?.name}
+            </label>
+            {/* Render grandchildren */}
+            {child?.children?.length > 0 && (
+              <div className="dropdown">
+                {child?.children?.map((grandchild) => (
+                  <div className="filter__group" key={grandchild?._id}>
+                    <input
+                      type="checkbox"
+                      name="categories"
+                      className="checkbox"
+                      id={`category${grandchild?._id}`}
+                      value={grandchild?._id}
+                      checked={categoryNames?.includes(grandchild?._id)}
+                      onChange={handleChange}
+                    />
+                    <label className="label" htmlFor={`category${grandchild?._id}`}>
+                      {grandchild?.name}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         ))}
+      </div>
+    )}
+  </FilterDropdownStyle>
+))}
+
+
+
       </div>
       <hr
         style={{
@@ -487,80 +597,90 @@ const Filters = ({
           />
         </div>
       </div>
+      {/* userLocation && */}
+      {/* { Object.keys(userLocation)?.length > 0 && ( */}
+      <div className="filter__wrapper">
+        <h3 className="filter__title title_flex">
+          Location{" "}
+          {!userLocation && (
+            <span onClick={enableLocation} className="title_enable">
+              Enable
+            </span>
+          )}
+        </h3>
 
-      {userLocation && Object.keys(userLocation)?.length > 0 && (
-        <div className="filter__wrapper">
-          <h3 className="filter__title">Location</h3>
-
-          <Slider
-            getAriaLabel={() => "Location"}
-            value={locationValue}
-            onChange={handleSliderChange}
-            valueLabelDisplay="auto"
-            getAriaValueText={valuetext}
-            className="range__slider"
-            min={5}
-            step={1}
-            max={25}
-            name={"location"}
-          />
-          <div className="slider__input__wrapper">
-            <div style={{ position: "relative" }}>
-              <input
-                type="number"
-                value={locationValue?.[0]}
-                className="slider__input"
-                max={5}
-                onChange={(e) => {
-                  const newLocationValue = [...locationValue];
-                  newLocationValue[0] = Number(e.target.value);
-                  if (newLocationValue[0] >= newLocationValue[1]) {
-                    newLocationValue[0] = newLocationValue[1];
-                  }
-                  setLocationValue(newLocationValue);
-                }}
-                style={{ paddingRight: "25px" }}
-              />
-              <span
-                style={{
-                  position: "absolute",
-                  right: "6px",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  fontSize: "12px",
-                }}
-              >
-                km
-              </span>
-            </div>
-            <div style={{ position: "relative" }}>
-              <input
-                type="number"
-                value={locationValue?.[1]}
-                className="slider__input"
-                max={25}
-                onChange={(e) => {
-                  const newLocationValue = [...locationValue];
-                  newLocationValue[1] = e.target.value;
-                  setLocationValue(newLocationValue);
-                }}
-                style={{ paddingRight: "25px" }}
-              />
-              <span
-                style={{
-                  position: "absolute",
-                  right: "6px",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  fontSize: "12px",
-                }}
-              >
-                km
-              </span>
-            </div>
+        <Slider
+          disabled={!userLocation}
+          getAriaLabel={() => "Location"}
+          value={locationValue}
+          onChange={handleSliderChange}
+          valueLabelDisplay="auto"
+          getAriaValueText={valuetext}
+          className="range__slider"
+          min={5}
+          step={1}
+          max={25}
+          name={"location"}
+        />
+        <div className="slider__input__wrapper">
+          <div style={{ position: "relative" }}>
+            <input
+              type="number"
+              disabled={!userLocation}
+              value={locationValue?.[0]}
+              className="slider__input"
+              max={5}
+              onChange={(e) => {
+                const newLocationValue = [...locationValue];
+                newLocationValue[0] = Number(e.target.value);
+                if (newLocationValue[0] >= newLocationValue[1]) {
+                  newLocationValue[0] = newLocationValue[1];
+                }
+                setLocationValue(newLocationValue);
+              }}
+              style={{ paddingRight: "25px" }}
+            />
+            <span
+              style={{
+                position: "absolute",
+                right: "6px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                fontSize: "12px",
+              }}
+            >
+              km
+            </span>
+          </div>
+          <div style={{ position: "relative" }}>
+            <input
+              type="number"
+              value={locationValue?.[1]}
+              disabled={!userLocation}
+              className="slider__input"
+              max={25}
+              onChange={(e) => {
+                const newLocationValue = [...locationValue];
+                newLocationValue[1] = e.target.value;
+                setLocationValue(newLocationValue);
+              }}
+              style={{ paddingRight: "25px" }}
+            />
+            <span
+              style={{
+                position: "absolute",
+                right: "6px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                fontSize: "12px",
+              }}
+            >
+              km
+            </span>
           </div>
         </div>
-      )}
+      </div>
+      {/* )} */}
     </FilterStyle>
   );
 };
