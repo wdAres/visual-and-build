@@ -66,6 +66,8 @@ const InfoCard = ({
   buttonText,
   onClick,
 }) => {
+
+
   return (
     <InfoCardStyle>
       <div className="info__main__detils">

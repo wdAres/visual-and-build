@@ -360,7 +360,7 @@ const Filters = ({
         </div>
 
 
-        {/* {categoriesData?.map((item) => (
+        {categoriesData?.map((item) => (
           <FilterDropdownStyle className="filter__wrap">
             <div className="filter__group" key={item?._id}>
               <input
@@ -402,77 +402,8 @@ const Filters = ({
                 ))}
             </div>
           </FilterDropdownStyle>
-        ))} */}
-        
-
-        {categoriesData?.map((item) => (
-  <FilterDropdownStyle className="filter__wrap" key={item?._id}>
-    <div className="filter__group" key={item?._id}>
-      <input
-        type="checkbox"
-        name="categories"
-        className="checkbox"
-        id={`category${item?._id}`}
-        value={item?._id}
-        checked={categoryNames?.includes(item?._id)}
-        onChange={handleChange}
-      />
-      {!item?.children?.length ? (
-        <label className="label" htmlFor={`category${item?._id}`}>
-          {item?.name}
-        </label>
-      ) : (
-        <div className="label" onClick={toggleVisibility}>
-          {item?.name} <GoChevronDown className="icon" />
-        </div>
-      )}
-    </div>
-    {/* Render children */}
-    {item?.children?.length > 0 && (
-      <div className="dropdown">
-        {item?.children?.map((child) => (
-          <div className="filter__group" key={child?._id}>
-            <input
-              type="checkbox"
-              name="categories"
-              className="checkbox"
-              id={`category${child?._id}`}
-              value={child?._id}
-              checked={categoryNames?.includes(child?._id)}
-              onChange={handleChange}
-            />
-            <label className="label" htmlFor={`category${child?._id}`}>
-              {child?.name}
-            </label>
-            {/* Render grandchildren */}
-            {child?.children?.length > 0 && (
-              <div className="dropdown">
-                {child?.children?.map((grandchild) => (
-                  <div className="filter__group" key={grandchild?._id}>
-                    <input
-                      type="checkbox"
-                      name="categories"
-                      className="checkbox"
-                      id={`category${grandchild?._id}`}
-                      value={grandchild?._id}
-                      checked={categoryNames?.includes(grandchild?._id)}
-                      onChange={handleChange}
-                    />
-                    <label className="label" htmlFor={`category${grandchild?._id}`}>
-                      {grandchild?.name}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
         ))}
-      </div>
-    )}
-  </FilterDropdownStyle>
-))}
-
-
+      
 
       </div>
       <hr
